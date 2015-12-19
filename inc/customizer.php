@@ -8,11 +8,11 @@
  */
 
 /**
- * Set up the WordPress core custom header and custom background features.
+ * Sets up the WordPress core custom header and custom background features.
  *
  * @since Twenty Sixteen 1.0
  *
- * @uses twentysixteen_header_style()
+ * @see twentysixteen_header_style()
  */
 function twentysixteen_custom_header_and_background() {
 	$color_scheme             = twentysixteen_get_color_scheme();
@@ -20,14 +20,14 @@ function twentysixteen_custom_header_and_background() {
 	$default_text_color       = trim( $color_scheme[3], '#' );
 
 	/**
-	 * Filter Twenty Sixteen custom-background support argument.
+	 * Filter the arguments used when adding 'custom-background' support in Twenty Sixteen.
 	 *
 	 * @since Twenty Sixteen 1.0
 	 *
 	 * @param array $args {
 	 *     An array of custom-background support arguments.
 	 *
-	 *     @type string $default-color     Default color of the background.
+	 *     @type string $default-color Default color of the background.
 	 * }
 	 */
 	add_theme_support( 'custom-background', apply_filters( 'twentysixteen_custom_background_args', array(
@@ -35,19 +35,19 @@ function twentysixteen_custom_header_and_background() {
 	) ) );
 
 	/**
-	 * Filter Twenty Sixteen custom-header support arguments.
+	 * Filter the arguments used when adding 'custom-header' support in Twenty Sixteen.
 	 *
 	 * @since Twenty Sixteen 1.0
 	 *
 	 * @param array $args {
 	 *     An array of custom-header support arguments.
 	 *
-	 *     @type string $default-text-color     Default color of the header text.
-	 *     @type int    $width                  Width in pixels of the custom header image. Default 1200.
-	 *     @type int    $height                 Height in pixels of the custom header image. Default 280.
-	 *     @type bool   $flex-height            Whether to allow flexible-height header images. Default true.
-	 *     @type string $wp-head-callback       Callback function used to styles the header image and text
-	 *                                          displayed on the blog.
+	 *     @type string $default-text-color Default color of the header text.
+	 *     @type int      $width            Width in pixels of the custom header image. Default 1200.
+	 *     @type int      $height           Height in pixels of the custom header image. Default 280.
+	 *     @type bool     $flex-height      Whether to allow flexible-height header images. Default true.
+	 *     @type callable $wp-head-callback Callback function used to style the header image and text
+	 *                                      displayed on the blog.
 	 * }
 	 */
 	add_theme_support( 'custom-header', apply_filters( 'twentysixteen_custom_header_args', array(
@@ -62,7 +62,9 @@ add_action( 'after_setup_theme', 'twentysixteen_custom_header_and_background' );
 
 if ( ! function_exists( 'twentysixteen_header_style' ) ) :
 /**
- * Styles the header text displayed on the site
+ * Styles the header text displayed on the site.
+ *
+ * Create your own twentysixteen_header_style() function to override in a child theme.
  *
  * @since Twenty Sixteen 1.0
  *
@@ -72,32 +74,31 @@ function twentysixteen_header_style() {
 	// If the header text option is untouched, let's bail.
 	if ( display_header_text() ) {
 		return;
+	}
 
 	// If the header text has been hidden.
-	} else {
 	?>
-		<style type="text/css" id="twentysixteen-header-css">
-			.site-branding {
-				margin: 0 auto 0 0;
-			}
+	<style type="text/css" id="twentysixteen-header-css">
+		.site-branding {
+			margin: 0 auto 0 0;
+		}
 
-			.site-title,
-			.site-description {
-				clip: rect(1px, 1px, 1px, 1px);
-				position: absolute;
-			}
-		</style>
+		.site-branding .site-title,
+		.site-description {
+			clip: rect(1px, 1px, 1px, 1px);
+			position: absolute;
+		}
+	</style>
 	<?php
-	}
 }
 endif; // twentysixteen_header_style
 
 /**
- * Add postMessage support for site title and description for the Customizer.
+ * Adds postMessage support for site title and description for the Customizer.
  *
  * @since Twenty Sixteen 1.0
  *
- * @param WP_Customize_Manager $wp_customize the Customizer object.
+ * @param WP_Customize_Manager $wp_customize The Customizer object.
  */
 function twentysixteen_customize_register( $wp_customize ) {
 	$color_scheme = twentysixteen_get_color_scheme();
@@ -113,7 +114,7 @@ function twentysixteen_customize_register( $wp_customize ) {
 	) );
 
 	$wp_customize->add_control( 'color_scheme', array(
-		'label'    => esc_html__( 'Base Color Scheme', 'twentysixteen' ),
+		'label'    => __( 'Base Color Scheme', 'twentysixteen' ),
 		'section'  => 'colors',
 		'type'     => 'select',
 		'choices'  => twentysixteen_get_color_scheme_choices(),
@@ -128,7 +129,7 @@ function twentysixteen_customize_register( $wp_customize ) {
 	) );
 
 	$wp_customize->add_control( new WP_Customize_Color_Control( $wp_customize, 'page_background_color', array(
-		'label'       => esc_html__( 'Page Background Color', 'twentysixteen' ),
+		'label'       => __( 'Page Background Color', 'twentysixteen' ),
 		'section'     => 'colors',
 	) ) );
 
@@ -143,7 +144,7 @@ function twentysixteen_customize_register( $wp_customize ) {
 	) );
 
 	$wp_customize->add_control( new WP_Customize_Color_Control( $wp_customize, 'link_color', array(
-		'label'       => esc_html__( 'Link Color', 'twentysixteen' ),
+		'label'       => __( 'Link Color', 'twentysixteen' ),
 		'section'     => 'colors',
 	) ) );
 
@@ -155,7 +156,7 @@ function twentysixteen_customize_register( $wp_customize ) {
 	) );
 
 	$wp_customize->add_control( new WP_Customize_Color_Control( $wp_customize, 'main_text_color', array(
-		'label'       => esc_html__( 'Main Text Color', 'twentysixteen' ),
+		'label'       => __( 'Main Text Color', 'twentysixteen' ),
 		'section'     => 'colors',
 	) ) );
 
@@ -167,14 +168,14 @@ function twentysixteen_customize_register( $wp_customize ) {
 	) );
 
 	$wp_customize->add_control( new WP_Customize_Color_Control( $wp_customize, 'secondary_text_color', array(
-		'label'       => esc_html__( 'Secondary Text Color', 'twentysixteen' ),
+		'label'       => __( 'Secondary Text Color', 'twentysixteen' ),
 		'section'     => 'colors',
 	) ) );
 }
 add_action( 'customize_register', 'twentysixteen_customize_register', 11 );
 
 /**
- * Register color schemes for Twenty Sixteen.
+ * Registers color schemes for Twenty Sixteen.
  *
  * Can be filtered with {@see 'twentysixteen_color_schemes'}.
  *
@@ -190,19 +191,39 @@ add_action( 'customize_register', 'twentysixteen_customize_register', 11 );
  * @return array An associative array of color scheme options.
  */
 function twentysixteen_get_color_schemes() {
+	/**
+	 * Filter the color schemes registered for use with Twenty Sixteen.
+	 *
+	 * The default schemes include 'default', 'dark', 'gray', 'red', and 'yellow'.
+	 *
+	 * @since Twenty Sixteen 1.0
+	 *
+	 * @param array $schemes {
+	 *     Associative array of color schemes data.
+	 *
+	 *     @type array $slug {
+	 *         Associative array of information for setting up the color scheme.
+	 *
+	 *         @type string $label  Color scheme label.
+	 *         @type array  $colors HEX codes for default colors prepended with a hash symbol ('#').
+	 *                              Colors are defined in the following order: Main background, page
+	 *                              background, link, main text, secondary text.
+	 *     }
+	 * }
+	 */
 	return apply_filters( 'twentysixteen_color_schemes', array(
 		'default' => array(
-			'label'  => esc_html__( 'Default', 'twentysixteen' ),
+			'label'  => __( 'Default', 'twentysixteen' ),
 			'colors' => array(
 				'#1a1a1a',
 				'#ffffff',
 				'#007acc',
 				'#1a1a1a',
-				'#757575',
+				'#686868',
 			),
 		),
 		'dark' => array(
-			'label'  => esc_html__( 'Dark', 'twentysixteen' ),
+			'label'  => __( 'Dark', 'twentysixteen' ),
 			'colors' => array(
 				'#262626',
 				'#1a1a1a',
@@ -212,33 +233,33 @@ function twentysixteen_get_color_schemes() {
 			),
 		),
 		'gray' => array(
-			'label'  => esc_html__( 'Gray', 'twentysixteen' ),
+			'label'  => __( 'Gray', 'twentysixteen' ),
 			'colors' => array(
 				'#616a73',
 				'#4d545c',
-				'#aaaaaa',
-				'#ededed',
-				'#ededed',
+				'#c7c7c7',
+				'#f2f2f2',
+				'#f2f2f2',
 			),
 		),
-		'green' => array(
-			'label'  => esc_html__( 'Green', 'twentysixteen' ),
+		'red' => array(
+			'label'  => __( 'Red', 'twentysixteen' ),
 			'colors' => array(
 				'#ffffff',
-				'#acc1a2',
-				'#6d8c87',
-				'#ffffff',
-				'#efeef4',
+				'#ff675f',
+				'#640c1f',
+				'#402b30',
+				'#402b30',
 			),
 		),
 		'yellow' => array(
-			'label'  => esc_html__( 'Yellow', 'twentysixteen' ),
+			'label'  => __( 'Yellow', 'twentysixteen' ),
 			'colors' => array(
 				'#3b3721',
 				'#ffef8e',
-				'#7f7d6f',
-				'#3b3721',
 				'#774e24',
+				'#3b3721',
+				'#5b4d3e',
 			),
 		),
 	) );
@@ -246,11 +267,13 @@ function twentysixteen_get_color_schemes() {
 
 if ( ! function_exists( 'twentysixteen_get_color_scheme' ) ) :
 /**
- * Get the current Twenty Sixteen color scheme.
+ * Retrieves the current Twenty Sixteen color scheme.
+ *
+ * Create your own twentysixteen_get_color_scheme() function to override in a child theme.
  *
  * @since Twenty Sixteen 1.0
  *
- * @return array An associative array of either the current or default color scheme hex values.
+ * @return array An associative array of either the current or default color scheme HEX values.
  */
 function twentysixteen_get_color_scheme() {
 	$color_scheme_option = get_theme_mod( 'color_scheme', 'default' );
@@ -266,7 +289,10 @@ endif; // twentysixteen_get_color_scheme
 
 if ( ! function_exists( 'twentysixteen_get_color_scheme_choices' ) ) :
 /**
- * Returns an array of color scheme choices registered for Twenty Sixteen.
+ * Retrieves an array of color scheme choices registered for Twenty Sixteen.
+ *
+ * Create your own twentysixteen_get_color_scheme_choices() function to override
+ * in a child theme.
  *
  * @since Twenty Sixteen 1.0
  *
@@ -287,7 +313,10 @@ endif; // twentysixteen_get_color_scheme_choices
 
 if ( ! function_exists( 'twentysixteen_sanitize_color_scheme' ) ) :
 /**
- * Sanitization callback for color schemes.
+ * Handles sanitization for Twenty Sixteen color schemes.
+ *
+ * Create your own twentysixteen_sanitize_color_scheme() function to override
+ * in a child theme.
  *
  * @since Twenty Sixteen 1.0
  *
@@ -298,7 +327,7 @@ function twentysixteen_sanitize_color_scheme( $value ) {
 	$color_schemes = twentysixteen_get_color_scheme_choices();
 
 	if ( ! array_key_exists( $value, $color_schemes ) ) {
-		$value = 'default';
+		return 'default';
 	}
 
 	return $value;
@@ -326,7 +355,7 @@ function twentysixteen_color_scheme_css() {
 	$color_textcolor_rgb = twentysixteen_hex2rgb( $color_scheme[3] );
 
 	// If the rgba values are empty return early.
-	if ( empty ( $color_textcolor_rgb ) ) {
+	if ( empty( $color_textcolor_rgb ) ) {
 		return;
 	}
 
@@ -337,7 +366,7 @@ function twentysixteen_color_scheme_css() {
 		'link_color'            => $color_scheme[2],
 		'main_text_color'       => $color_scheme[3],
 		'secondary_text_color'  => $color_scheme[4],
-		'border_color'          => vsprintf( 'rgba( %1$s, %2$s, %3$s, 0.1)', $color_textcolor_rgb ),
+		'border_color'          => vsprintf( 'rgba( %1$s, %2$s, %3$s, 0.2)', $color_textcolor_rgb ),
 
 	);
 
@@ -348,7 +377,7 @@ function twentysixteen_color_scheme_css() {
 add_action( 'wp_enqueue_scripts', 'twentysixteen_color_scheme_css' );
 
 /**
- * Binds JS listener to make Customizer color_scheme control.
+ * Binds the JS listener to make Customizer color_scheme control.
  *
  * Passes color scheme data as colorScheme global.
  *
@@ -388,7 +417,7 @@ function twentysixteen_get_color_scheme_css( $colors ) {
 		'border_color'          => '',
 	) );
 
-	$css = <<<CSS
+	return <<<CSS
 	/* Color Scheme */
 
 	/* Background Color */
@@ -397,13 +426,12 @@ function twentysixteen_get_color_scheme_css( $colors ) {
 	}
 
 	/* Page Background Color */
-	.site,
-	.dropdown-toggle,
-	.dropdown-toggle:hover,
-	.dropdown-toggle:focus {
+	.site {
 		background-color: {$colors['page_background_color']};
 	}
 
+	mark,
+	ins,
 	button,
 	button[disabled]:hover,
 	button[disabled]:focus,
@@ -419,15 +447,14 @@ function twentysixteen_get_color_scheme_css( $colors ) {
 	.menu-toggle.toggled-on,
 	.menu-toggle.toggled-on:hover,
 	.menu-toggle.toggled-on:focus,
-	.dropdown-toggle.toggled-on,
-	.dropdown-toggle.toggled-on:hover,
-	.dropdown-toggle.toggled-on:focus,
 	.pagination .prev,
 	.pagination .next,
 	.pagination .prev:hover,
 	.pagination .prev:focus,
 	.pagination .next:hover,
 	.pagination .next:focus,
+	.pagination .nav-links:before,
+	.pagination .nav-links:after,
 	.widget_calendar tbody a,
 	.widget_calendar tbody a:hover,
 	.widget_calendar tbody a:focus,
@@ -438,14 +465,8 @@ function twentysixteen_get_color_scheme_css( $colors ) {
 	}
 
 	/* Link Color */
-	button:hover,
-	button:focus,
-	input[type="button"]:hover,
-	input[type="button"]:focus,
-	input[type="reset"]:hover,
-	input[type="reset"]:focus,
-	input[type="submit"]:hover,
-	input[type="submit"]:focus,
+	.menu-toggle:hover,
+	.menu-toggle:focus,
 	a,
 	.main-navigation a:hover,
 	.main-navigation a:focus,
@@ -457,8 +478,8 @@ function twentysixteen_get_color_scheme_css( $colors ) {
 	.post-navigation a:focus .post-title,
 	.tagcloud a:hover,
 	.tagcloud a:focus,
-	.site-title a:hover,
-	.site-title a:focus,
+	.site-branding .site-title a:hover,
+	.site-branding .site-title a:focus,
 	.entry-title a:hover,
 	.entry-title a:focus,
 	.entry-footer a:hover,
@@ -470,23 +491,22 @@ function twentysixteen_get_color_scheme_css( $colors ) {
 	.comment-reply-link,
 	.comment-reply-link:hover,
 	.comment-reply-link:focus,
+	.required,
 	.site-info a:hover,
 	.site-info a:focus {
 		color: {$colors['link_color']};
 	}
 
-	button,
-	button[disabled]:hover,
-	button[disabled]:focus,
-	input[type="button"],
-	input[type="button"][disabled]:hover,
-	input[type="button"][disabled]:focus,
-	input[type="reset"],
-	input[type="reset"][disabled]:hover,
-	input[type="reset"][disabled]:focus,
-	input[type="submit"],
-	input[type="submit"][disabled]:hover,
-	input[type="submit"][disabled]:focus,
+	mark,
+	ins,
+	button:hover,
+	button:focus,
+	input[type="button"]:hover,
+	input[type="button"]:focus,
+	input[type="reset"]:hover,
+	input[type="reset"]:focus,
+	input[type="submit"]:hover,
+	input[type="submit"]:focus,
 	.pagination .prev:hover,
 	.pagination .prev:focus,
 	.pagination .next:hover,
@@ -497,18 +517,6 @@ function twentysixteen_get_color_scheme_css( $colors ) {
 		background-color: {$colors['link_color']};
 	}
 
-	button,
-	button[disabled]:hover,
-	button[disabled]:focus,
-	input[type="button"],
-	input[type="button"][disabled]:hover,
-	input[type="button"][disabled]:focus,
-	input[type="reset"],
-	input[type="reset"][disabled]:hover,
-	input[type="reset"][disabled]:focus,
-	input[type="submit"],
-	input[type="submit"][disabled]:hover,
-	input[type="submit"][disabled]:focus,
 	input[type="text"]:focus,
 	input[type="email"]:focus,
 	input[type="url"]:focus,
@@ -518,26 +526,23 @@ function twentysixteen_get_color_scheme_css( $colors ) {
 	.tagcloud a:hover,
 	.tagcloud a:focus,
 	.menu-toggle:hover,
-	.menu-toggle:focus,
-	.dropdown-toggle:hover,
-	.dropdown-toggle:focus {
+	.menu-toggle:focus {
 		border-color: {$colors['link_color']};
 	}
 
 	/* Main Text Color */
 	body,
-	select,
 	blockquote cite,
 	blockquote small,
 	.main-navigation a,
 	.menu-toggle,
 	.dropdown-toggle,
-	.social-navigation a:before,
+	.social-navigation a,
 	.post-navigation a,
 	.pagination a:hover,
 	.pagination a:focus,
 	.widget-title a,
-	.site-title a,
+	.site-branding .site-title a,
 	.entry-title a,
 	.page-links > .page-links-title,
 	.comment-author,
@@ -550,34 +555,50 @@ function twentysixteen_get_color_scheme_css( $colors ) {
 	.menu-toggle.toggled-on,
 	.menu-toggle.toggled-on:hover,
 	.menu-toggle.toggled-on:focus,
-	.dropdown-toggle.toggled-on,
-	.dropdown-toggle.toggled-on:hover,
-	.dropdown-toggle.toggled-on:focus,
 	.post-navigation,
 	.post-navigation div + div,
 	.pagination,
 	.widget,
-	body:not(.error404):not(.search-no-results) .page-header,
+	.page-header,
 	.page-links a,
 	.comments-title,
 	.comment-reply-title {
 		border-color: {$colors['main_text_color']};
 	}
 
+	button,
+	button[disabled]:hover,
+	button[disabled]:focus,
+	input[type="button"],
+	input[type="button"][disabled]:hover,
+	input[type="button"][disabled]:focus,
+	input[type="reset"],
+	input[type="reset"][disabled]:hover,
+	input[type="reset"][disabled]:focus,
+	input[type="submit"],
+	input[type="submit"][disabled]:hover,
+	input[type="submit"][disabled]:focus,
 	.menu-toggle.toggled-on,
 	.menu-toggle.toggled-on:hover,
 	.menu-toggle.toggled-on:focus,
-	.dropdown-toggle.toggled-on,
-	.dropdown-toggle.toggled-on:hover,
-	.dropdown-toggle.toggled-on:focus,
+	.pagination:before,
+	.pagination:after,
 	.pagination .prev,
 	.pagination .next,
-	.pagination .nav-links:before,
 	.page-links a {
 		background-color: {$colors['main_text_color']};
 	}
 
 	/* Secondary Text Color */
+
+	/**
+	 * IE8 and earlier will drop any block with CSS3 selectors.
+	 * Do not combine these styles with the next block.
+	 */
+	body:not(.search-results) .entry-summary {
+		color: {$colors['secondary_text_color']};
+	}
+
 	blockquote,
 	.post-password-form label,
 	a:hover,
@@ -590,7 +611,6 @@ function twentysixteen_get_color_scheme_css( $colors ) {
 	.widget_rss .rss-date,
 	.widget_rss cite,
 	.site-description,
-	body:not(.search-results) .entry-summary,
 	.author-bio,
 	.entry-footer,
 	.entry-footer a,
@@ -637,24 +657,28 @@ function twentysixteen_get_color_scheme_css( $colors ) {
 	.main-navigation li,
 	.main-navigation .primary-menu,
 	.menu-toggle,
-	.dropdown-toggle,
+	.dropdown-toggle:after,
 	.social-navigation a,
 	.image-navigation,
 	.comment-navigation,
 	.tagcloud a,
-	.author-info,
+	.entry-content,
+	.entry-summary,
 	.page-links a,
 	.page-links > span,
 	.comment-list article,
 	.comment-list .pingback,
 	.comment-list .trackback,
 	.comment-reply-link,
-	.no-comments {
+	.no-comments,
+	.widecolumn .mu_register .mu_alert {
+		border-color: {$colors['main_text_color']}; /* Fallback for IE7 and IE8 */
 		border-color: {$colors['border_color']};
 	}
 
 	hr,
 	code {
+		background-color: {$colors['main_text_color']}; /* Fallback for IE7 and IE8 */
 		background-color: {$colors['border_color']};
 	}
 
@@ -685,16 +709,14 @@ function twentysixteen_get_color_scheme_css( $colors ) {
 	}
 
 CSS;
-
-	return $css;
 }
 
 
 /**
- * Output an Underscore template for generating CSS for the color scheme.
+ * Outputs an Underscore template for generating CSS for the color scheme.
  *
- * The template generates the css dynamically for instant display in the Customizer
- * preview.
+ * The template generates the css dynamically for instant display in the
+ * Customizer preview.
  *
  * @since Twenty Sixteen 1.0
  */
@@ -734,13 +756,12 @@ function twentysixteen_page_background_color_css() {
 
 	$css = '
 		/* Custom Page Background Color */
-		.site,
-		.dropdown-toggle,
-		.dropdown-toggle:hover,
-		.dropdown-toggle:focus {
+		.site {
 			background-color: %1$s;
 		}
 
+		mark,
+		ins,
 		button,
 		button[disabled]:hover,
 		button[disabled]:focus,
@@ -756,15 +777,14 @@ function twentysixteen_page_background_color_css() {
 		.menu-toggle.toggled-on,
 		.menu-toggle.toggled-on:hover,
 		.menu-toggle.toggled-on:focus,
-		.dropdown-toggle.toggled-on,
-		.dropdown-toggle.toggled-on:hover,
-		.dropdown-toggle.toggled-on:focus,
 		.pagination .prev,
 		.pagination .next,
 		.pagination .prev:hover,
 		.pagination .prev:focus,
 		.pagination .next:hover,
 		.pagination .next:focus,
+		.pagination .nav-links:before,
+		.pagination .nav-links:after,
 		.widget_calendar tbody a,
 		.widget_calendar tbody a:hover,
 		.widget_calendar tbody a:focus,
@@ -809,14 +829,8 @@ function twentysixteen_link_color_css() {
 
 	$css = '
 		/* Custom Link Color */
-		button:hover,
-		button:focus,
-		input[type="button"]:hover,
-		input[type="button"]:focus,
-		input[type="reset"]:hover,
-		input[type="reset"]:focus,
-		input[type="submit"]:hover,
-		input[type="submit"]:focus,
+		.menu-toggle:hover,
+		.menu-toggle:focus,
 		a,
 		.main-navigation a:hover,
 		.main-navigation a:focus,
@@ -828,8 +842,8 @@ function twentysixteen_link_color_css() {
 		.post-navigation a:focus .post-title,
 		.tagcloud a:hover,
 		.tagcloud a:focus,
-		.site-title a:hover,
-		.site-title a:focus,
+		.site-branding .site-title a:hover,
+		.site-branding .site-title a:focus,
 		.entry-title a:hover,
 		.entry-title a:focus,
 		.entry-footer a:hover,
@@ -841,23 +855,22 @@ function twentysixteen_link_color_css() {
 		.comment-reply-link,
 		.comment-reply-link:hover,
 		.comment-reply-link:focus,
+		.required,
 		.site-info a:hover,
 		.site-info a:focus {
 			color: %1$s;
 		}
 
-		button,
-		button[disabled]:hover,
-		button[disabled]:focus,
-		input[type="button"],
-		input[type="button"][disabled]:hover,
-		input[type="button"][disabled]:focus,
-		input[type="reset"],
-		input[type="reset"][disabled]:hover,
-		input[type="reset"][disabled]:focus,
-		input[type="submit"],
-		input[type="submit"][disabled]:hover,
-		input[type="submit"][disabled]:focus,
+		mark,
+		ins,
+		button:hover,
+		button:focus,
+		input[type="button"]:hover,
+		input[type="button"]:focus,
+		input[type="reset"]:hover,
+		input[type="reset"]:focus,
+		input[type="submit"]:hover,
+		input[type="submit"]:focus,
 		.pagination .prev:hover,
 		.pagination .prev:focus,
 		.pagination .next:hover,
@@ -868,18 +881,6 @@ function twentysixteen_link_color_css() {
 			background-color: %1$s;
 		}
 
-		button,
-		button[disabled]:hover,
-		button[disabled]:focus,
-		input[type="button"],
-		input[type="button"][disabled]:hover,
-		input[type="button"][disabled]:focus,
-		input[type="reset"],
-		input[type="reset"][disabled]:hover,
-		input[type="reset"][disabled]:focus,
-		input[type="submit"],
-		input[type="submit"][disabled]:hover,
-		input[type="submit"][disabled]:focus,
 		input[type="text"]:focus,
 		input[type="email"]:focus,
 		input[type="url"]:focus,
@@ -889,9 +890,7 @@ function twentysixteen_link_color_css() {
 		.tagcloud a:hover,
 		.tagcloud a:focus,
 		.menu-toggle:hover,
-		.menu-toggle:focus,
-		.dropdown-toggle:hover,
-		.dropdown-toggle:focus {
+		.menu-toggle:focus {
 			border-color: %1$s;
 		}
 
@@ -928,28 +927,27 @@ function twentysixteen_main_text_color_css() {
 	$main_text_color_rgb = twentysixteen_hex2rgb( $main_text_color );
 
 	// If the rgba values are empty return early.
-	if ( empty ( $main_text_color_rgb ) ) {
+	if ( empty( $main_text_color_rgb ) ) {
 		return;
 	}
 
 	// If we get this far, we have a custom color scheme.
-	$border_color        = vsprintf( 'rgba( %1$s, %2$s, %3$s, 0.1)', $main_text_color_rgb );
+	$border_color = vsprintf( 'rgba( %1$s, %2$s, %3$s, 0.2)', $main_text_color_rgb );
 
 	$css = '
 		/* Custom Main Text Color */
 		body,
-		select,
 		blockquote cite,
 		blockquote small,
 		.main-navigation a,
 		.menu-toggle,
 		.dropdown-toggle,
-		.social-navigation a:before,
+		.social-navigation a,
 		.post-navigation a,
 		.pagination a:hover,
 		.pagination a:focus,
 		.widget-title a,
-		.site-title a,
+		.site-branding .site-title a,
 		.entry-title a,
 		.page-links > .page-links-title,
 		.comment-author,
@@ -962,29 +960,36 @@ function twentysixteen_main_text_color_css() {
 		.menu-toggle.toggled-on,
 		.menu-toggle.toggled-on:hover,
 		.menu-toggle.toggled-on:focus,
-		.dropdown-toggle.toggled-on,
-		.dropdown-toggle.toggled-on:hover,
-		.dropdown-toggle.toggled-on:focus,
 		.post-navigation,
 		.post-navigation div + div,
 		.pagination,
 		.widget,
-		body:not(.error404):not(.search-no-results) .page-header,
+		.page-header,
 		.page-links a,
 		.comments-title,
 		.comment-reply-title {
 			border-color: %1$s;
 		}
 
+		button,
+		button[disabled]:hover,
+		button[disabled]:focus,
+		input[type="button"],
+		input[type="button"][disabled]:hover,
+		input[type="button"][disabled]:focus,
+		input[type="reset"],
+		input[type="reset"][disabled]:hover,
+		input[type="reset"][disabled]:focus,
+		input[type="submit"],
+		input[type="submit"][disabled]:hover,
+		input[type="submit"][disabled]:focus,
 		.menu-toggle.toggled-on,
 		.menu-toggle.toggled-on:hover,
 		.menu-toggle.toggled-on:focus,
-		.dropdown-toggle.toggled-on,
-		.dropdown-toggle.toggled-on:hover,
-		.dropdown-toggle.toggled-on:focus,
+		.pagination:before,
+		.pagination:after,
 		.pagination .prev,
 		.pagination .next,
-		.pagination .nav-links:before,
 		.page-links a {
 			background-color: %1$s;
 		}
@@ -994,7 +999,6 @@ function twentysixteen_main_text_color_css() {
 		pre,
 		abbr,
 		acronym,
-		hr,
 		table,
 		th,
 		td,
@@ -1007,24 +1011,28 @@ function twentysixteen_main_text_color_css() {
 		.main-navigation li,
 		.main-navigation .primary-menu,
 		.menu-toggle,
-		.dropdown-toggle,
+		.dropdown-toggle:after,
 		.social-navigation a,
 		.image-navigation,
 		.comment-navigation,
 		.tagcloud a,
-		.author-info,
+		.entry-content,
+		.entry-summary,
 		.page-links a,
 		.page-links > span,
 		.comment-list article,
 		.comment-list .pingback,
 		.comment-list .trackback,
 		.comment-reply-link,
-		.no-comments {
+		.no-comments,
+		.widecolumn .mu_register .mu_alert {
+			border-color: %1$s; /* Fallback for IE7 and IE8 */
 			border-color: %2$s;
 		}
 
 		hr,
 		code {
+			background-color: %1$s; /* Fallback for IE7 and IE8 */
 			background-color: %2$s;
 		}
 
@@ -1064,6 +1072,15 @@ function twentysixteen_secondary_text_color_css() {
 
 	$css = '
 		/* Custom Secondary Text Color */
+
+		/**
+		 * IE8 and earlier will drop any block with CSS3 selectors.
+		 * Do not combine these styles with the next block.
+		 */
+		body:not(.search-results) .entry-summary {
+			color: %1$s;
+		}
+
 		blockquote,
 		.post-password-form label,
 		a:hover,
@@ -1076,7 +1093,6 @@ function twentysixteen_secondary_text_color_css() {
 		.widget_rss .rss-date,
 		.widget_rss cite,
 		.site-description,
-		body:not(.search-results) .entry-summary,
 		.author-bio,
 		.entry-footer,
 		.entry-footer a,

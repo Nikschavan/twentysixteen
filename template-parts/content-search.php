@@ -2,8 +2,6 @@
 /**
  * The template part for displaying results in search pages
  *
- * Learn more: http://codex.wordpress.org/Template_Hierarchy
- *
  * @package WordPress
  * @subpackage Twenty_Sixteen
  * @since Twenty Sixteen 1.0
@@ -17,11 +15,9 @@
 
 	<?php twentysixteen_post_thumbnail(); ?>
 
-	<div class="entry-summary">
-		<?php the_excerpt(); ?>
-	</div><!-- .entry-summary -->
+	<?php twentysixteen_excerpt(); ?>
 
-	<?php if ( 'post' == get_post_type() ) : ?>
+	<?php if ( 'post' === get_post_type() ) : ?>
 
 		<footer class="entry-footer">
 			<?php twentysixteen_entry_meta(); ?>
@@ -29,8 +25,8 @@
 				edit_post_link(
 					sprintf(
 						/* translators: %s: Name of current post */
-						esc_html__( 'Edit %s', 'twentysixteen' ),
-						the_title( '<span class="screen-reader-text">"', '"</span>', false )
+						__( 'Edit<span class="screen-reader-text"> "%s"</span>', 'twentysixteen' ),
+						get_the_title()
 					),
 					'<span class="edit-link">',
 					'</span>'
@@ -44,8 +40,8 @@
 			edit_post_link(
 				sprintf(
 					/* translators: %s: Name of current post */
-					esc_html__( 'Edit %s', 'twentysixteen' ),
-					the_title( '<span class="screen-reader-text">', '</span>', false )
+					__( 'Edit<span class="screen-reader-text"> "%s"</span>', 'twentysixteen' ),
+					get_the_title()
 				),
 				'<footer class="entry-footer"><span class="edit-link">',
 				'</span></footer><!-- .entry-footer -->'

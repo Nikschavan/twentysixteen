@@ -6,11 +6,20 @@
  */
 
 ( function( $ ) {
-	var $body, masthead, menuToggle, siteNavigation, socialNavigation, siteHeaderMenu, resizeTimer;
+	var body, masthead, menuToggle, siteNavigation, socialNavigation, siteHeaderMenu, resizeTimer;
 
 	function initMainNavigation( container ) {
-		// Add dropdown toggle that display child menu items.
-		container.find( '.menu-item-has-children > a' ).after( '<button class="dropdown-toggle" aria-expanded="false">' + screenReaderText.expand + '</button>' );
+
+		// Add dropdown toggle that displays child menu items.
+		var dropdownToggle = $( '<button />', {
+			'class': 'dropdown-toggle',
+			'aria-expanded': false
+		} ).append( $( '<span />', {
+			'class': 'screen-reader-text',
+			text: screenReaderText.expand
+		} ) );
+
+		container.find( '.menu-item-has-children > a' ).after( dropdownToggle );
 
 		// Toggle buttons and submenu items with active children menu items.
 		container.find( '.current-menu-ancestor > button' ).addClass( 'toggled-on' );
@@ -20,12 +29,17 @@
 		container.find( '.menu-item-has-children' ).attr( 'aria-haspopup', 'true' );
 
 		container.find( '.dropdown-toggle' ).click( function( e ) {
-			var _this = $( this );
+			var _this            = $( this ),
+				screenReaderSpan = _this.find( '.screen-reader-text' );
+
 			e.preventDefault();
 			_this.toggleClass( 'toggled-on' );
 			_this.next( '.children, .sub-menu' ).toggleClass( 'toggled-on' );
+
+			// jscs:disable
 			_this.attr( 'aria-expanded', _this.attr( 'aria-expanded' ) === 'false' ? 'true' : 'false' );
-			_this.html( _this.html() === screenReaderText.expand ? screenReaderText.collapse : screenReaderText.expand );
+			// jscs:enable
+			screenReaderSpan.text( screenReaderSpan.text() === screenReaderText.expand ? screenReaderText.collapse : screenReaderText.expand );
 		} );
 	}
 	initMainNavigation( $( '.main-navigation' ) );
@@ -38,8 +52,9 @@
 
 	// Enable menuToggle.
 	( function() {
+
 		// Return early if menuToggle is missing.
-		if ( ! menuToggle ) {
+		if ( ! menuToggle.length ) {
 			return;
 		}
 
@@ -48,26 +63,44 @@
 
 		menuToggle.on( 'click.twentysixteen', function() {
 			$( this ).add( siteHeaderMenu ).toggleClass( 'toggled-on' );
-			$( this ).add( siteNavigation ).add( socialNavigation ).attr( 'aria-expanded', $( this ).add( siteNavigation ).add( socialNavigation ).attr( 'aria-expanded' ) === 'false' ? 'true' : 'false');
+
+			// jscs:disable
+			$( this ).add( siteNavigation ).add( socialNavigation ).attr( 'aria-expanded', $( this ).add( siteNavigation ).add( socialNavigation ).attr( 'aria-expanded' ) === 'false' ? 'true' : 'false' );
+			// jscs:enable
 		} );
 	} )();
 
 	// Fix sub-menus for touch devices and better focus for hidden submenu items for accessibility.
 	( function() {
-		if ( ! siteNavigation || ! siteNavigation.children().length ) {
+		if ( ! siteNavigation.length || ! siteNavigation.children().length ) {
 			return;
 		}
 
-		if ( 'ontouchstart' in window ) {
-			siteNavigation.find( '.menu-item-has-children > a' ).on( 'touchstart.twentysixteen', function( e ) {
-				var el = $( this ).parent( 'li' );
+		// Toggle `focus` class to allow submenu access on tablets.
+		function toggleFocusClassTouchScreen() {
+			if ( window.innerWidth >= 910 ) {
+				$( document.body ).on( 'touchstart.twentysixteen', function( e ) {
+					if ( ! $( e.target ).closest( '.main-navigation li' ).length ) {
+						$( '.main-navigation li' ).removeClass( 'focus' );
+					}
+				} );
+				siteNavigation.find( '.menu-item-has-children > a' ).on( 'touchstart.twentysixteen', function( e ) {
+					var el = $( this ).parent( 'li' );
 
-				if ( ! el.hasClass( 'focus' ) ) {
-					e.preventDefault();
-					el.toggleClass( 'focus' );
-					el.siblings( '.focus' ).removeClass( 'focus' );
-				}
-			} );
+					if ( ! el.hasClass( 'focus' ) ) {
+						e.preventDefault();
+						el.toggleClass( 'focus' );
+						el.siblings( '.focus' ).removeClass( 'focus' );
+					}
+				} );
+			} else {
+				siteNavigation.find( '.menu-item-has-children > a' ).unbind( 'touchstart.twentysixteen' );
+			}
+		}
+
+		if ( 'ontouchstart' in window ) {
+			$( window ).on( 'resize.twentysixteen', toggleFocusClassTouchScreen );
+			toggleFocusClassTouchScreen();
 		}
 
 		siteNavigation.find( 'a' ).on( 'focus.twentysixteen blur.twentysixteen', function() {
@@ -75,9 +108,9 @@
 		} );
 	} )();
 
-	// Add he default ARIA attributes for the menu toggle and the navigations.
+	// Add the default ARIA attributes for the menu toggle and the navigations.
 	function onResizeARIA() {
-		if ( 910 > window.innerWidth ) {
+		if ( window.innerWidth < 910 ) {
 			if ( menuToggle.hasClass( 'toggled-on' ) ) {
 				menuToggle.attr( 'aria-expanded', 'true' );
 			} else {
@@ -101,56 +134,67 @@
 		}
 	}
 
-	// Add a class to big image and caption larger than or equal to 840px.
-	function bigImageClass() {
-		if ( $body.hasClass( 'page' ) || $body.hasClass( 'search' ) || $body.hasClass( 'single-attachment' ) || $body.hasClass( 'error404' ) ) {
+	// Add 'below-entry-meta' class to elements.
+	function belowEntryMetaClass( param ) {
+		if ( body.hasClass( 'page' ) || body.hasClass( 'search' ) || body.hasClass( 'single-attachment' ) || body.hasClass( 'error404' ) ) {
 			return;
 		}
 
-		var entryContent = $( '.entry-content' );
-		entryContent.find( 'img.size-full' ).each( function() {
-			var img                  = $( this ),
-				caption              = img.closest( 'figure' ),
-				imgPos               = img.offset(),
-				imgPosTop            = imgPos.top,
-				entryFooter          = img.closest( 'article' ).find( '.entry-footer' ),
+		$( '.entry-content' ).find( param ).each( function() {
+			var element              = $( this ),
+				elementPos           = element.offset(),
+				elementPosTop        = elementPos.top,
+				entryFooter          = element.closest( 'article' ).find( '.entry-footer' ),
 				entryFooterPos       = entryFooter.offset(),
 				entryFooterPosBottom = entryFooterPos.top + ( entryFooter.height() + 28 ),
-				newImg               = new Image();
+				caption              = element.closest( 'figure' ),
+				newImg;
 
-			newImg.src = img.attr( 'src' );
+			// Add 'below-entry-meta' to elements below the entry meta.
+			if ( elementPosTop > entryFooterPosBottom ) {
 
-			$( newImg ).load( function() {
-				var imgWidth = newImg.width;
+				// Check if full-size images and captions are larger than or equal to 840px.
+				if ( 'img.size-full' === param ) {
 
-				if ( imgPosTop > entryFooterPosBottom ) {
-					if ( 840 <= imgWidth  ) {
-						img.addClass( 'size-big' );
-					}
+					// Create an image to find native image width of resized images (i.e. max-width: 100%).
+					newImg = new Image();
+					newImg.src = element.attr( 'src' );
 
-					if ( caption.hasClass( 'wp-caption' ) && 840 <= imgWidth  ) {
-						caption.addClass( 'caption-big' );
-						caption.removeAttr( 'style' );
-					}
+					$( newImg ).load( function() {
+						if ( newImg.width >= 840  ) {
+							element.addClass( 'below-entry-meta' );
+
+							if ( caption.hasClass( 'wp-caption' ) ) {
+								caption.addClass( 'below-entry-meta' );
+								caption.removeAttr( 'style' );
+							}
+						}
+					} );
 				} else {
-					img.removeClass( 'size-big' );
-					caption.removeClass( 'caption-big' );
+					element.addClass( 'below-entry-meta' );
 				}
-			} );
+			} else {
+				element.removeClass( 'below-entry-meta' );
+				caption.removeClass( 'below-entry-meta' );
+			}
 		} );
 	}
 
 	$( document ).ready( function() {
-		$body = $( document.body );
+		body = $( document.body );
 
 		$( window )
 			.on( 'load.twentysixteen', onResizeARIA )
 			.on( 'resize.twentysixteen', function() {
 				clearTimeout( resizeTimer );
-				resizeTimer = setTimeout( bigImageClass, 300 );
+				resizeTimer = setTimeout( function() {
+					belowEntryMetaClass( 'img.size-full' );
+					belowEntryMetaClass( 'blockquote.alignleft, blockquote.alignright' );
+				}, 300 );
 				onResizeARIA();
 			} );
 
-		bigImageClass();
+		belowEntryMetaClass( 'img.size-full' );
+		belowEntryMetaClass( 'blockquote.alignleft, blockquote.alignright' );
 	} );
 } )( jQuery );
